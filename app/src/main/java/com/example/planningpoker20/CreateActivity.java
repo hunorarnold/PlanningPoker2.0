@@ -17,37 +17,41 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+
+
 public class CreateActivity extends AppCompatActivity {
     private int lastSessionId;
-    private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-    private DatabaseReference mDatabaseReference = mDatabase.getReference();
+
+    private FirebaseDatabase mDatabase ;
+    private DatabaseReference mDatabaseReference ;
+
     EditText editSessionId, editSessionName, editDescriptionText;
     Button creatSessionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("Session");
 
-       // mDatabaseReference = FirebaseDatabase.getInstance().getReference("Session");
         setContentView(R.layout.activity_create);
         init();
         getLastSessionID();
-
-        creatSessionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                insertFirebaseData();
-               // Log.i("FBDB", "NewSession " + getLastSessionId());
-              ///  Intent intent = new Intent(CreateActivity.this, Session.class);
-             //   intent.putExtra("SessionName", editSessionName.getText().toString());
-              //  intent.putExtra("SessionId", getLastSessionId());
-             //   startActivity(intent);
-            }
-        });
+        creatSession();
 
     }
+
+    private void creatSession() {
+        creatSessionButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+              insertFirebaseData();
+
+            }
+        });
+    }
+
     private void insertFirebaseData(){
-        getLastSessionId();
+
 
         mDatabaseReference.child(String.valueOf(lastSessionId)).child("SessionId").setValue(lastSessionId);
         mDatabaseReference.child(String.valueOf(lastSessionId)).child("SessionName").setValue(editSessionName.getText().toString());
@@ -57,7 +61,7 @@ public class CreateActivity extends AppCompatActivity {
 
     private void init() {
 
-        creatSessionButton = (Button) findViewById(R.id.btnCreate);
+        creatSessionButton = (Button) findViewById(R.id.btnC);
         editSessionId=(EditText) findViewById(R.id.editSessID);
         editSessionName=(EditText) findViewById(R.id.editSessName);
         editDescriptionText=(EditText) findViewById(R.id.editDesc);
