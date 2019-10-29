@@ -19,7 +19,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class CreateActivity extends AppCompatActivity {
     private int lastSessionId;
-    private DatabaseReference DatabaseRef;
+    private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference mDatabaseReference = mDatabase.getReference();
     EditText editSessionId, editSessionName, editDescriptionText;
     Button creatSessionButton;
 
@@ -27,7 +28,7 @@ public class CreateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DatabaseRef = FirebaseDatabase.getInstance().getReference("Session");
+       // mDatabaseReference = FirebaseDatabase.getInstance().getReference("Session");
         setContentView(R.layout.activity_create);
         init();
         getLastSessionID();
@@ -36,11 +37,11 @@ public class CreateActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 insertFirebaseData();
-                Log.i("FBDB", "NewSession " + getLastSessionId());
-                Intent intent = new Intent(CreateActivity.this, Session.class);
-                intent.putExtra("SessionName", editSessionName.getText().toString());
-                intent.putExtra("SessionId", getLastSessionId());
-                startActivity(intent);
+               // Log.i("FBDB", "NewSession " + getLastSessionId());
+              ///  Intent intent = new Intent(CreateActivity.this, Session.class);
+             //   intent.putExtra("SessionName", editSessionName.getText().toString());
+              //  intent.putExtra("SessionId", getLastSessionId());
+             //   startActivity(intent);
             }
         });
 
@@ -48,9 +49,9 @@ public class CreateActivity extends AppCompatActivity {
     private void insertFirebaseData(){
         getLastSessionId();
 
-        DatabaseRef.child(String.valueOf(lastSessionId)).child("SessionId").setValue(lastSessionId);
-        DatabaseRef.child(String.valueOf(lastSessionId)).child("SessionName").setValue(editSessionName.getText().toString());
-        DatabaseRef.child(String.valueOf(lastSessionId)).child("SessionDesc").setValue(editDescriptionText.getText().toString());
+        mDatabaseReference.child(String.valueOf(lastSessionId)).child("SessionId").setValue(lastSessionId);
+        mDatabaseReference.child(String.valueOf(lastSessionId)).child("SessionName").setValue(editSessionName.getText().toString());
+        mDatabaseReference.child(String.valueOf(lastSessionId)).child("SessionDesc").setValue(editDescriptionText.getText().toString());
 
     }
 
@@ -64,7 +65,7 @@ public class CreateActivity extends AppCompatActivity {
 
     private void getLastSessionID()
     {
-        Query query = DatabaseRef.orderByChild("SessionID").limitToLast(1);
+        Query query = mDatabaseReference.orderByChild("SessionID").limitToLast(1);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
