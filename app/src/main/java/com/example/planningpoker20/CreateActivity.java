@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,13 +18,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import static java.lang.Integer.parseInt;
 
 
 public class CreateActivity extends AppCompatActivity {
-    private int lastSessionId;
 
-    private FirebaseDatabase mDatabase ;
-    private DatabaseReference mDatabaseReference ;
+    private int sessionID;
+    DatabaseReference mDatabaseReference;
+
+
 
     EditText editSessionId, editSessionName, editDescriptionText;
     Button creatSessionButton;
@@ -31,11 +34,11 @@ public class CreateActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("Session");
+
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("Sessions");
 
         setContentView(R.layout.activity_create);
         init();
-        getLastSessionID();
         creatSession();
 
     }
@@ -52,22 +55,25 @@ public class CreateActivity extends AppCompatActivity {
 
     private void insertFirebaseData(){
 
-
-        mDatabaseReference.child(String.valueOf(lastSessionId)).child("SessionId").setValue(lastSessionId);
-        mDatabaseReference.child(String.valueOf(lastSessionId)).child("SessionName").setValue(editSessionName.getText().toString());
-        mDatabaseReference.child(String.valueOf(lastSessionId)).child("SessionDesc").setValue(editDescriptionText.getText().toString());
+        String sessionid =editSessionId.getText().toString();
+        if(isStringInt(sessionid)){
+            setSessionID(parseInt(sessionid));
+            mDatabaseReference.child(String.valueOf(sessionID)).setValue(sessionID);
+            mDatabaseReference.child(String.valueOf(sessionID)).setValue(editSessionName.getText().toString());
+            mDatabaseReference.child(String.valueOf(sessionID)).setValue(editDescriptionText.getText().toString());
+        }
 
     }
 
     private void init() {
 
         creatSessionButton = (Button) findViewById(R.id.btnC);
-        editSessionId=(EditText) findViewById(R.id.editSessID);
+        editSessionId=(EditText) findViewById(R.id.editSessIDC);
         editSessionName=(EditText) findViewById(R.id.editSessName);
         editDescriptionText=(EditText) findViewById(R.id.editDesc);
     }
 
-    private void getLastSessionID()
+  /*  private void getLastSessionID()
     {
         Query query = mDatabaseReference.orderByChild("SessionID").limitToLast(1);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -79,7 +85,7 @@ public class CreateActivity extends AppCompatActivity {
                     key = child.getKey();
                     Log.i("FireBaseError","last sessionID: "+key);
                     try {
-                        setLastSessionId(Integer.parseInt(key));
+                        setLastSessionId(parseInt(key));
                     }catch (NumberFormatException e)
                     {
                         Log.i("FireBaseError",e.toString());
@@ -92,15 +98,26 @@ public class CreateActivity extends AppCompatActivity {
                 Log.i("FBDBERROR",databaseError.toString());
             }
         });
+    }*/
+
+    public int getSessionID() {
+        return sessionID;
     }
 
-    public int getLastSessionId() {
-        return lastSessionId;
+    public void setSessionID(int sessionID) {
+        this.sessionID = sessionID;
     }
 
-    public void setLastSessionId(int lastSessionId) {
-        Log.i("SessionId","Last sessionID: "+lastSessionId);
-        this.lastSessionId = lastSessionId;
+    public boolean isStringInt(String s)
+    {
+        try
+        {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException ex)
+        {
+            return false;
+        }
     }
 }
 
